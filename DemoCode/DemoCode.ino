@@ -17,6 +17,7 @@ struct GPS_Position {
   double Altitude;
 };
 
+GPS_Position Current_Pos;
 
 void setup() {
   Serial.begin(115200);
@@ -35,7 +36,6 @@ void setup() {
 
 void loop() {
   static char NMEA_Sentance[80];
-  static GPS_Position Current_Pos;
   static uint16_t Current_Time; 
 
   //If a new sentance is returned;

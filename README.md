@@ -1,3 +1,5 @@
-# IoT Project
+# Smart Bike IoT Project
 
-This is the repo for my Smartbike project for iot. Currnely I only have interfacing with the sensors. After christmas I will get the website complete.
+A smart bike system that gathers data from multiple sensors. Includes a GPS, Accelerometer/Gyroscope (MPU6050) and Heartrate sensor(Max30100)
+
+Cathal Commins
