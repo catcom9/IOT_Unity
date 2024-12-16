@@ -4,6 +4,7 @@
 #define USER_CTRL 0x6A
 #define INT_ENABLE 0x38
 #define INT_STATUS 0x3A
+#define ACCEL_CONFIG 0x1C
 
 void MPU_Start(){
   I2C_Write(MPU_6050, PWR_MGMT_1, 0x01);

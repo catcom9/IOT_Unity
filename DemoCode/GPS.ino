@@ -1,4 +1,4 @@
-HardwareSerial GPS_Serial(1);
+
 
 
 char GGA_Time[11];
@@ -25,10 +25,10 @@ uint8_t GPS_ReadSentance(char Sentance[]){
     if(buffer == '\n'){
       Sentance[i] = '\0';
       i = 0;
-      return 0;
+      return 1;
     }
   }
-  return 1;
+  return 0;
 
 }
 
@@ -92,7 +92,7 @@ uint8_t GPS_CaluclateData(GPS_Position* Position, uint16_t* Time){
     *Time |= (GGA_Time[i] - '0') << (12 - 4 * i);
   }
 
-  if(GGA_Position_Fix_Indicator[1] == '0'){
+  if(GGA_Position_Fix_Indicator[0] == '0'){
     return 1;
   }
 
@@ -139,8 +139,8 @@ void GPS_StartUp(uint8_t RX_GPS, uint8_t TX_GPS){
 
   //To tell the GPS to send updates every second and only 1 type of sentance
   GPS_Serial.write("$PMTK220,1000*2F\r\n");
-  delay(100);
+  delay(1000);
   
   GPS_Serial.write("$PMTK314,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*29\r\n");
-  delay(100);
+  delay(1000);
 }

@@ -6,15 +6,12 @@ String Website1 = F(R"=====(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script>
-        let longitude = 
-)=====");
+        let longitude = )=====");
 
 String Website2 = F(R"=====(;
-    let latitude =
-)=====");
+    let latitude =)=====");
 
-String Website3 = F(R"=====(
-    ;</script>
+String Website3 = F(R"=====(;</script>
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -34,7 +31,7 @@ String Website3 = F(R"=====(
 <body>
 
    <!--Map Begin-->
-   <div id = "map", style="height: 400px;"></div>
+   <div id = "map" style="height: 400px;"></div>
 
    <script>
         var map = L.map('map').setView([longitude, latitude], 13);
@@ -43,6 +40,9 @@ String Website3 = F(R"=====(
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
+
+        L.marker([longitude, latitude]).addTo(map)
+
    </script>
    <!--Map End-->
    
