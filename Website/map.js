@@ -10,20 +10,19 @@ var waypoints = [
 var map = L.map('MainMap').setView([51.505, -0.09], 13);
 
 var cycleroute = L.polyline(waypoints, {color: 'red'}).addTo(map);
-cycleroute.on("mouseover", hoverNear)
 
-
-var tooltip = L.tooltip()
-    .setLatLng(waypoints[0])
-    .setContent('Hello world!<br />This is a nice tooltip.')
-    .addTo(map);
+map.setView(cycleroute.getCenter(), 13);
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
+for(var x = 0; x != 6; x++){
+    L.marker(waypoints[x])
+    .addTo(map)
+    .bindPopup("Helllo");
 
-function hoverNear(e){
-    console.log("Hiya");
 }
+
+
