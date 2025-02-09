@@ -7,7 +7,7 @@ var waypoints = [
     [53.277238, -9.009913],
 ]
 
-var map = L.map('MainMap').setView([51.505, -0.09], 13);
+var map = L.map('MainMap').setView([53.301521, -8.748674], 13);
 
 var cycleroute = L.polyline(waypoints, {color: 'red'}).addTo(map);
 
