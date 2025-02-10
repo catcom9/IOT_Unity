@@ -21,7 +21,7 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 for(var x = 0; x != 6; x++){
     L.marker(waypoints[x])
     .addTo(map)
-    .bindPopup("Helllo");
+    .bindPopup("<p>Time: 15:43<br/>Current Speed: 65 km/h<br/>Location:<br/>Lat: 53.278189<br/>Long: -9.008778</p>");
 
 }
 
