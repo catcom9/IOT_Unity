@@ -27,6 +27,7 @@ html, body {
     background-color: white;
     padding: 10px;
     font-size: 30px;
+    border: none;
     transition-duration: 0.4s;
     z-index: 1;
 }
