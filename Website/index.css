@@ -19,14 +19,37 @@ html, body {
     align-items: center;
     z-index: 1;
     top: 10px;
+    height: auto;
     width: 100%;
 }
 
 .MenuButton{
     background-color: white;
-    height: 10px;
+    padding: 10px;
+    font-size: 30px;
+    transition-duration: 0.4s;
     z-index: 1;
 }
 
+.MenuButton:hover{
+    background-color: grey;
+}
 
+.ButtonContent{
+    background-color: white;
+    font-size: 30px;
+    width: 0px;
+
+
+    overflow: hidden;
+}
+
+
+.LeftButton{
+    border-radius: 15px 0px 0px 15px;
+}
+
+.RightButton{
+    border-radius: 0px 15px 15px 0px;
+}
 
