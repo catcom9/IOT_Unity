@@ -36,16 +36,6 @@ html, body {
     background-color: grey;
 }
 
-.ButtonContent{
-    background-color: white;
-    font-size: 30px;
-    width: 0px;
-
-
-    overflow: hidden;
-}
-
-
 .LeftButton{
     border-radius: 15px 0px 0px 15px;
 }
@@ -53,4 +43,21 @@ html, body {
 .RightButton{
     border-radius: 0px 15px 15px 0px;
 }
+
+#MenuContent{
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    top: 20px;
+    height: auto;
+    width: 100%;
+}
+
+.MenuPopup{
+    background-color: white;
+}
+
+
 
