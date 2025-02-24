@@ -1,6 +1,3 @@
-/*
-#include "Webserver.h"
-
 void WebServer_Start(){
   WiFi.begin(ssid, password);
 
@@ -12,9 +9,8 @@ void WebServer_Start(){
   Serial.println(WiFi.localIP());
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200, "text/html", Website1 + String(Current_Pos.latitude, 20) + Website2 + String(Current_Pos.longitude, 20) + Website3);
+    request->send(LittleFS, "/Website/index.html", "text/html", false);
   });
 
   server.begin();
 }
-*/
