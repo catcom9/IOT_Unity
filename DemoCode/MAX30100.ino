@@ -70,44 +70,6 @@ uint8_t Median_Filter(float data, float* result){
 
 }
 
-uint8_t MAX30100_PeakDectection(float data, float* result){
-  static uint8_t State = 3;
-  static float LastData = 0;
-
-  static int64_t TimeStamp;
-  static int64_t LastTimeStamp = 0;
-
-  switch (State){
-    case 0:
-      if(data < 60){
-        LastData = data;
-        return 0;
-      }
-      State = 1;
-      LastData = data;
-      return 0;
-    case 1:
-      if (data > LastData){
-        LastData = data;
-        return 0;
-      }
-      TimeStamp = esp_timer_get_time();
-      State = 2;
-    case 2:
-      *result = 60000000/ (float)(TimeStamp - LastTimeStamp);
-      LastTimeStamp = TimeStamp;
-      State = 3;
-      return 1;
-    case 3:
-      if (data >= 50){
-        State = 3;
-        return 0;
-      }
-      State = 0;
-      return 0;
-  }
-}
-
 
 uint8_t MAX30100_ReadFIFO(uint16_t *IR_Data){
   if(I2C_Read(I2C_HeartAddress, INT_STATUS) == 0x00){

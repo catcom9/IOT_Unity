@@ -6,9 +6,12 @@
 #include <ESPAsyncWebServer.h>
 
 
+
 //#include <secrets.h>
 
 AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
+HardwareSerial GPS_Serial(1);
 
 
 struct GPS_Position {
@@ -18,7 +21,6 @@ struct GPS_Position {
 };
 
 GPS_Position Current_Pos;
-HardwareSerial GPS_Serial(1);
 
 volatile uint32_t WHEEL_RPM_COUNT = 0;
 
@@ -53,13 +55,10 @@ void loop() {
 
   
   uint16_t data;
+  static uint16_t old_data = 0;
   if(MAX30100_ReadFIFO(&data)){
-    float dcremoved = RemoveDc(data);
-    float median = 0;
-    static float last_data = 0;
-    if(Median_Filter(dcremoved, &median)){
-      last_data = median;
-    }
+    Serial.println(data - old_data);
+    old_data = data;
   }
 
   int16_t MPU6050_Data[7];
@@ -72,7 +71,7 @@ void loop() {
     Wheel_RPM = ((float)WHEEL_RPM_COUNT/(float)((Current_Time - Last_Calculation) / 1000.0)) * 30;
     WHEEL_RPM_COUNT = 0;
     Last_Calculation = Current_Time;
-    Serial.println(Wheel_RPM);
+    //Serial.println(Wheel_RPM);
   }
 
 
