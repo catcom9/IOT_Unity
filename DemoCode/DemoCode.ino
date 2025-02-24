@@ -4,10 +4,10 @@
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <LittleFS.h>
+#include "FS.h"
 
-
-
-//#include <secrets.h>
+#include <secrets.h>
 
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
@@ -29,6 +29,11 @@ void setup() {
   Serial.begin(115200);
   Wire.begin();
 
+  if(!LittleFS.begin()){
+    Serial.println("File system not present");
+  }
+
+
 
   GPS_StartUp(5, 4);
   LCD_Start();
@@ -36,7 +41,7 @@ void setup() {
   MAX30100_Start();
   ReedSwitchSetup();
 
-  //WebServer_Start();
+  WebServer_Start();
 
   LCD_WriteString("Speed:\nCadence:");
 }
@@ -57,7 +62,7 @@ void loop() {
   uint16_t data;
   static uint16_t old_data = 0;
   if(MAX30100_ReadFIFO(&data)){
-    Serial.println(data - old_data);
+    //Serial.println(data - old_data);
     old_data = data;
   }
 
