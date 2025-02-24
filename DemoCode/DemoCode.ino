@@ -6,9 +6,12 @@
 #include <ESPAsyncWebServer.h>
 
 
-#include <secrets.h>
+
+//#include <secrets.h>
 
 AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
+HardwareSerial GPS_Serial(1);
 
 
 struct GPS_Position {
@@ -18,7 +21,9 @@ struct GPS_Position {
 };
 
 GPS_Position Current_Pos;
-HardwareSerial GPS_Serial(1);
+
+volatile uint32_t WHEEL_RPM_COUNT = 0;
+
 
 void setup() {
   Serial.begin(115200);
@@ -29,96 +34,45 @@ void setup() {
   LCD_Start();
   MPU_Start();
   MAX30100_Start();
+  ReedSwitchSetup();
 
-  WebServer_Start();
+  //WebServer_Start();
 
   LCD_WriteString("Speed:\nCadence:");
 }
 
 void loop() {
-  static char NMEA_Sentance[80];
-  static uint16_t Current_Time;
-  static char mode = '0';
 
-  if(Serial.available()){
-    mode = Serial.read();
-  }
+  static char NMEA_Sentance[80];
 
   //If a new sentance is returned;
   if (GPS_ReadSentance(NMEA_Sentance)){
     //Serial.print(NMEA_Sentance);
-    
     if (GPS_ParseSentance(NMEA_Sentance) == 1){
-      GPS_CaluclateData(&Current_Pos, &Current_Time);
+      GPS_CaluclateData(&Current_Pos);
     }
-
   }
 
   
   uint16_t data;
+  static uint16_t old_data = 0;
   if(MAX30100_ReadFIFO(&data)){
-    float dcremoved = RemoveDc(data);
-
-    float median = 0;
-    static float last_data = 0;
-    if(Median_Filter(dcremoved, &median)){
-      if(mode == '2'){
-        Serial.println(median - last_data);
-      }
-      last_data = median;
-    }
+    Serial.println(data - old_data);
+    old_data = data;
   }
 
   int16_t MPU6050_Data[7];
   MPU6050_BurstRead(MPU6050_Data);
 
-
-
-  if (mode == '0'){
-    static int64_t last_time = 0;
-    if(esp_timer_get_time() - last_time >= 50000){
-      last_time = esp_timer_get_time();
-
-      Serial.println("Accelerometer");
-
-      Serial.print("\tX: ");
-      Serial.println(MPU6050_Data[0] / 16384);
-
-      Serial.print("\tY: ");
-      Serial.println(MPU6050_Data[1] / 16384);
-
-      Serial.print("\tZ: ");
-      Serial.println(MPU6050_Data[2] / 16384);
-
-      Serial.println("Gyroscope");
-
-      Serial.print("\tX: ");
-      Serial.println(MPU6050_Data[4] / 131);
-
-      Serial.print("\tY: ");
-      Serial.println(MPU6050_Data[5] / 131);
-      
-      Serial.print("\tZ: ");
-      Serial.println(MPU6050_Data[6] / 131);
-
-      Serial.print("Temp: ");
-      Serial.println(MPU6050_Data[3]/340 + 36.53);
-    }
+  static uint32_t Last_Calculation = 0;
+  static float Wheel_RPM = 0;
+  if (millis() - Last_Calculation >= 1000){
+    uint32_t Current_Time = millis();
+    Wheel_RPM = ((float)WHEEL_RPM_COUNT/(float)((Current_Time - Last_Calculation) / 1000.0)) * 30;
+    WHEEL_RPM_COUNT = 0;
+    Last_Calculation = Current_Time;
+    //Serial.println(Wheel_RPM);
   }
-
-  if(mode == '1'){
-    static int64_t last_time = 0;
-    if(esp_timer_get_time() - last_time >= 500000){
-      Serial.print(NMEA_Sentance);
-      last_time = esp_timer_get_time();
-    }
-  }
-
-
-
-
-
-
 
 
 }

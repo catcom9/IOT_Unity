@@ -86,11 +86,7 @@ uint8_t GPS_ParseSentance(char Sentance[80]){
 
 }
 
-uint8_t GPS_CaluclateData(GPS_Position* Position, uint16_t* Time){
-  *Time = 0;
-  for (uint8_t i = 0; i != 4; i++){
-    *Time |= (GGA_Time[i] - '0') << (12 - 4 * i);
-  }
+uint8_t GPS_CaluclateData(GPS_Position* Position){
 
   if(GGA_Position_Fix_Indicator[0] == '0'){
     return 1;
