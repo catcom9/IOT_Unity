@@ -30,6 +30,11 @@ void LCD_WriteAC(uint8_t Address){
 }
 
 
+void LCD_Clear(){
+  I2C_Write(ScreenAddress, 0x80, 1);
+  delay(2);
+}
+
 
 
 

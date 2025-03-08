@@ -66,11 +66,12 @@ uint8_t GPS_ParseSentance(char Sentance[80]){
   while(Sentance[index] != '*'){
     char ReadChar = Sentance[index];
     if(GGA_Sentance[GGA_Array_Index] == NULL){
+      
       return 1;
     }
 
     if(ReadChar == ','){
-      GGA_Sentance[GGA_Array_Index][i+1] = '\0';
+      GGA_Sentance[GGA_Array_Index][i] = '\0';
       GGA_Array_Index++;
       i = 0;
     }else{
@@ -80,8 +81,6 @@ uint8_t GPS_ParseSentance(char Sentance[80]){
     index++;
   }
 
-
-
   return 0;
 
 }
@@ -89,8 +88,10 @@ uint8_t GPS_ParseSentance(char Sentance[80]){
 uint8_t GPS_CaluclateData(GPS_Position* Position){
 
   if(GGA_Position_Fix_Indicator[0] == '0'){
+    Position->fix = 0;
     return 1;
   }
+  Position->fix = 1;
 
 
 
