@@ -1,23 +1,31 @@
-#define WheelGPIOMask 0x0000
-#define PedalGPIOMask 0x0000
+#define WheelSwitch 26
+#define PedalSwitch 25
 
-//0 Wheel Switch, 1 Pedal Switch
-uint8_t Reed_CheckSwitch(uint8_t ToCheck){
-  static uint8_t LastState[2] = {0, 0};
-  uint32_t Masks[2] = {WheelGPIOMask, PedalGPIOMask};
 
-  if(GPIO_IN_REG & Masks[ToCheck]){
+void IRAM_ATTR Reed_Wheel(){
+  static uint32_t PREV_WHEEL_TIMESTAMP = 0;
+  uint32_t Currnet_Time = millis();
 
-    if(LastState[ToCheck] == 0){
-      LastState[ToCheck] = 1;
-      return 1;
-    }
-    return 0;
-
-  } else {
-    LastState[ToCheck] = 0;
-    return 0;
+  if(PREV_WHEEL_TIMESTAMP - Currnet_Time > 2){
+    PREV_WHEEL_TIMESTAMP = Currnet_Time;
+    WHEEL_RPM_COUNT++;
   }
+  PREV_WHEEL_TIMESTAMP = millis();
+}
+
+void IRAM_ATTR Reed_Pedal(){
+  static uint32_t PREV_PEDAL_TIMESTAMP = 0;
+  uint32_t Currnet_Time = millis();
+
+  if(PREV_PEDAL_TIMESTAMP - Currnet_Time > 1){
+    PREV_PEDAL_TIMESTAMP = Currnet_Time;
+    PEDAL_RPM_COUNT++;
+  }
+  PREV_PEDAL_TIMESTAMP = millis();
 }
 
 
+void ReedSwitchSetup(){
+  attachInterrupt(digitalPinToInterrupt(WheelSwitch), Reed_Wheel, RISING);
+  attachInterrupt(digitalPinToInterrupt(PedalSwitch), Reed_Pedal, RISING);
+}

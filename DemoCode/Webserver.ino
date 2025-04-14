@@ -1,7 +1,7 @@
-#include "Webserver.h"
-
 void WebServer_Start(){
   WiFi.begin(ssid, password);
+
+  LCD_WriteString("Connecting to \nWifi...");
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
@@ -11,8 +11,32 @@ void WebServer_Start(){
   Serial.println(WiFi.localIP());
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200, "text/html", Website1 + String(Current_Pos.latitude, 20) + Website2 + String(Current_Pos.longitude, 20) + Website3);
+    request->send(LittleFS, "/Website/index.html", "text/html", false);
   });
 
+  ws.onEvent(onEvent);
+  server.addHandler(&ws);
+
+  server.serveStatic("/", LittleFS, "/Website");
+
+
   server.begin();
+}
+
+
+void onEvent(AsyncWebSocket* server,  AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
+  switch (type){
+    case WS_EVT_CONNECT:
+      Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
+      break;
+    case WS_EVT_DISCONNECT:
+      Serial.printf("WebSocket client #%u disconnected from %s\n", client->id(), client->remoteIP().toString().c_str());
+      break;
+    case WS_EVT_DATA:
+      break;
+    case WS_EVT_PONG:
+      break;
+    case WS_EVT_ERROR:
+      break;
+  }
 }
