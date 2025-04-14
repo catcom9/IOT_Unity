@@ -25,6 +25,7 @@ struct GPS_Position {
 GPS_Position Current_Pos;
 
 volatile uint32_t WHEEL_RPM_COUNT = 0;
+volatile uint32_t PEDAL_RPM_COUNT = 0;
 
 
 void setup() {
@@ -38,13 +39,13 @@ void setup() {
   ReedSwitchSetup();
 
   if(!LittleFS.begin()){
-    LCD_WriteString("Error! No file system!");
+    LCD_WriteString("Error!\n No file system!");
   }
 
-  WebServer_Start();
-
+  //WebServer_Start();
+  
   LCD_Clear();
-  LCD_WriteString("Speed:\nCadence:");
+  LCD_WriteString("Speed: 0 Km/h\nCadence: 0 RPM");
 }
 
 void loop() {
@@ -71,21 +72,32 @@ void loop() {
   MPU6050_BurstRead(MPU6050_Data);
 
   static uint32_t Last_Calculation = 0;
-  static float Wheel_RPM = 0;
+  static uint32_t Wheel_RPM = 0;
+  static uint32_t Pedal_RPM = 0;
   if (millis() - Last_Calculation >= 1000){
     uint32_t Current_Time = millis();
-    Wheel_RPM = ((float)WHEEL_RPM_COUNT/(float)((Current_Time - Last_Calculation) / 1000.0)) * 30;
+    Wheel_RPM = (WHEEL_RPM_COUNT/((Current_Time - Last_Calculation) / 1000.0)) * 30;
     WHEEL_RPM_COUNT = 0;
+
+    Pedal_RPM = (PEDAL_RPM_COUNT/((Current_Time - Last_Calculation) / 1000.0)) * 30;
+    PEDAL_RPM_COUNT = 0;
+
     Last_Calculation = Current_Time;
-    //Serial.println(Wheel_RPM);
+    
+    char buffer[50];
+    LCD_Clear();
+    sprintf(buffer, "Speed: %luKm/H\nCadance %lu RPM", Wheel_RPM, Pedal_RPM);
+    LCD_WriteString(buffer);
+
   }
 
 
-  static uint32_t Last_Cleanup = 0;
-  if (millis() - Last_Cleanup >= 1000){
-    ws.cleanupClients();
-    Last_Cleanup = millis();
-  }
+  
+  // static uint32_t Last_Cleanup = 0;
+  // if (millis() - Last_Cleanup >= 1000){
+  //   ws.cleanupClients();
+  //   Last_Cleanup = millis();
+  // }
 
   
   static uint32_t Last_Data_Sent = 0;
@@ -107,8 +119,6 @@ void loop() {
 
     Last_Data_Sent = millis();
   }
-
-
 }
 
 
