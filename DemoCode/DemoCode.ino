@@ -29,6 +29,9 @@ volatile uint32_t PEDAL_RPM_COUNT = 0;
 
 volatile uint8_t HR_DATA_READY = 0;
 
+float wheelDia = 0.1; //Wheel diamater in meters
+float circufrance = wheelDia * 3.14159;
+
 
 void setup() {
   Serial.begin(115200);
@@ -66,7 +69,7 @@ void loop() {
   static uint16_t old_data = 0;
   if(MAX30100_ReadFIFO(&data)){
     float DC_Removed = RemoveDc(data);
-    Serial.println(MAX30100_MovingAverage(DC_Removed));
+    //Serial.println(MAX30100_MovingAverage(DC_Removed));
   }
 
   int16_t MPU6050_Data[7];
@@ -87,7 +90,7 @@ void loop() {
     
     char buffer[50];
     LCD_Clear();
-    sprintf(buffer, "Speed: %luKm/H\nCadance %lu RPM", Wheel_RPM, Pedal_RPM);
+    sprintf(buffer, "Speed: %.1fKm/H\nCadance %lu RPM", (((float)Wheel_RPM * circufrance) * 3.6), Pedal_RPM);
     LCD_WriteString(buffer);
 
   }
