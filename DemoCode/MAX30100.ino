@@ -22,7 +22,7 @@ void MAX30100_Start(){
 
   //Setup Device
   I2C_Write(I2C_HeartAddress, INT_ENABLE, 0x20);
-  I2C_Write(I2C_HeartAddress, SP02_CONFIG, 0x0C);
+  I2C_Write(I2C_HeartAddress, SP02_CONFIG, 0x00);
   I2C_Write(I2C_HeartAddress, MODE_CONFIG, 0x02);
   I2C_Write(I2C_HeartAddress, LED_CONFIG, 0xFF);
 

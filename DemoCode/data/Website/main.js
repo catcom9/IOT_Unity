@@ -32,3 +32,6 @@ function onMessage(event){
     console.log(json_data);
 }
 
+function GoHome(){
+    map.setView([53.278189, -9.008778], 16);
+}
