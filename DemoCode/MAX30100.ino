@@ -8,11 +8,12 @@
 #define MODE_CONFIG 0x06
 #define SP02_CONFIG 0x07
 #define LED_CONFIG 0x09
+ 
+#define HR_INT_PIN 19
 
-
-
-
-
+void IRAM_ATTR HR_READY(){
+  HR_DATA_READY = 1;
+}
 
 void MAX30100_Start(){
   //Reset Device
@@ -21,53 +22,36 @@ void MAX30100_Start(){
 
   //Setup Device
   I2C_Write(I2C_HeartAddress, INT_ENABLE, 0x20);
-  I2C_Write(I2C_HeartAddress, SP02_CONFIG, 0x43);
+  I2C_Write(I2C_HeartAddress, SP02_CONFIG, 0x0C);
   I2C_Write(I2C_HeartAddress, MODE_CONFIG, 0x02);
   I2C_Write(I2C_HeartAddress, LED_CONFIG, 0xFF);
+
+  //Setup Intrupt
+  //attachInterrupt(digitalPinToInterrupt(HR_INT_PIN), HR_READY, FALLING);
 }
+
+
 
 float RemoveDc(uint16_t Value){
   static float prev_value = 0;
-  float intermediate = Value + (0.95 * prev_value);
+  float intermediate = (float)Value + (0.95 * prev_value);
   float result = intermediate - prev_value;
   prev_value = intermediate;
   
   return result;
 }
 
-uint8_t Median_Filter(float data, float* result){
-  static float Data_Buffer[5];
+float MAX30100_MovingAverage(float data){
+  static float window[15];
+  static float sum = 0;
   static uint8_t index = 0;
-
-  Data_Buffer[index] = data;
-  index++;
-
-  if(index == 5){
-    while(1){
-      uint8_t Sorted = 1;
-      for(uint8_t i = 0; i != 4; i++){
-        if(Data_Buffer[i] > Data_Buffer[i + 1]){
-          float temp = Data_Buffer[i];
-          Data_Buffer[i] = Data_Buffer[i + 1];
-          Data_Buffer[i + 1] = Data_Buffer[i];
-          Sorted = 0;
-        }
-      }
-
-      if(Sorted == 1){
-        break;
-      }
-
-    }
-
-    *result = Data_Buffer[2];
-    index = 0;
-
-    return 1;
-  }
-
-  return 0;
-
+  
+  sum -= window[index];
+  window[index] = data;
+  sum += data;
+  index = (index + 1) % 15;
+  
+  return sum/15;
 }
 
 
@@ -88,6 +72,7 @@ uint8_t MAX30100_ReadFIFO(uint16_t *IR_Data){
   Temp |= Wire.read() << 8;
   Temp |= Wire.read();
 
+  Temp >>= 3;
   *IR_Data = Temp;
 
   Wire.read();

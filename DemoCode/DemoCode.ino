@@ -27,6 +27,8 @@ GPS_Position Current_Pos;
 volatile uint32_t WHEEL_RPM_COUNT = 0;
 volatile uint32_t PEDAL_RPM_COUNT = 0;
 
+volatile uint8_t HR_DATA_READY = 0;
+
 
 void setup() {
   Serial.begin(115200);
@@ -59,13 +61,12 @@ void loop() {
       GPS_CaluclateData(&Current_Pos);
     }
   }
-
   
-  uint16_t data;
+  uint16_t data = 0;
   static uint16_t old_data = 0;
   if(MAX30100_ReadFIFO(&data)){
-    //Serial.println(data - old_data);
-    old_data = data;
+    float DC_Removed = RemoveDc(data);
+    Serial.println(MAX30100_MovingAverage(DC_Removed));
   }
 
   int16_t MPU6050_Data[7];
@@ -91,7 +92,6 @@ void loop() {
 
   }
 
-
   
   // static uint32_t Last_Cleanup = 0;
   // if (millis() - Last_Cleanup >= 1000){
@@ -100,25 +100,25 @@ void loop() {
   // }
 
   
-  static uint32_t Last_Data_Sent = 0;
-  if (millis() - Last_Data_Sent >= 1000){
-    StaticJsonDocument<200> json_doc;
-    char serial_json[200];
+  // static uint32_t Last_Data_Sent = 0;
+  // if (millis() - Last_Data_Sent >= 1000){
+  //   StaticJsonDocument<200> json_doc;
+  //   char serial_json[200];
 
-    if(Current_Pos.fix != 0){
-      json_doc["fix"] = 1;
-      json_doc["latitude"] = Current_Pos.latitude;
-      json_doc["longitude"] = Current_Pos.longitude;
-      json_doc["altitude"] = Current_Pos.altitude;
-    }else{
-      json_doc["fix"] = 0;
-    }
+  //   if(Current_Pos.fix != 0){
+  //     json_doc["fix"] = 1;
+  //     json_doc["latitude"] = Current_Pos.latitude;
+  //     json_doc["longitude"] = Current_Pos.longitude;
+  //     json_doc["altitude"] = Current_Pos.altitude;
+  //   }else{
+  //     json_doc["fix"] = 0;
+  //   }
 
-    size_t lenght = serializeJson(json_doc, serial_json);
-    ws.textAll(serial_json, lenght);
+  //   size_t lenght = serializeJson(json_doc, serial_json);
+  //   ws.textAll(serial_json, lenght);
 
-    Last_Data_Sent = millis();
-  }
+  //   Last_Data_Sent = millis();
+  // }
 }
 
 
