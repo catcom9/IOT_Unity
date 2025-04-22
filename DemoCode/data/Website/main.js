@@ -1,7 +1,8 @@
-var gateway = `ws://${window.location.hostname}/ws`;
+var gateway = `ws://192.168.1.34/ws`;
 var websocket;
-var polyline_created = 0;
-var cycleroute
+var cycleroute = [];
+var polyline = L.polyline(cycleroute).addTo(map);;
+
 
 window.addEventListener('load', onLoad);
 
@@ -19,15 +20,11 @@ function onMessage(event){
     var json_data = JSON.parse(event.data);
     if(json_data.fix == 1){
         var latlong = [json_data.latitude, json_data.longitude];
-        if(polyline_created == 0){
-            cycleroute = L.polyline(latlong).addTo(map);
-            L.marker(latlong).addTo(map);
-            polyline_created = 1;
-        } else {
-            cycleroute.addLatLng(latlong);
-            L.marker(latlong).addTo(map);
-            console.log("Added point");
-        }
+        cycleroute.push(latlong)
+        console.log(latlong);
+        polyline.setLatLngs(cycleroute);
+        L.marker(latlong).addTo(map);
+
     }
     console.log(json_data);
 }

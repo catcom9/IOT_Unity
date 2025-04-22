@@ -47,7 +47,7 @@ void setup() {
     LCD_WriteString("Error!\n No file system!");
   }
 
-  //WebServer_Start();
+  WebServer_Start();
   
   LCD_Clear();
   LCD_WriteString("Speed: 0 Km/h\nCadence: 0 RPM");
@@ -96,32 +96,32 @@ void loop() {
   }
 
   
-  // static uint32_t Last_Cleanup = 0;
-  // if (millis() - Last_Cleanup >= 1000){
-  //   ws.cleanupClients();
-  //   Last_Cleanup = millis();
-  // }
+  static uint32_t Last_Cleanup = 0;
+  if (millis() - Last_Cleanup >= 1000){
+    ws.cleanupClients();
+    Last_Cleanup = millis();
+  }
 
   
-  // static uint32_t Last_Data_Sent = 0;
-  // if (millis() - Last_Data_Sent >= 1000){
-  //   StaticJsonDocument<200> json_doc;
-  //   char serial_json[200];
+  static uint32_t Last_Data_Sent = 0;
+  if (millis() - Last_Data_Sent >= 1000){
+    StaticJsonDocument<200> json_doc;
+    char serial_json[200];
 
-  //   if(Current_Pos.fix != 0){
-  //     json_doc["fix"] = 1;
-  //     json_doc["latitude"] = Current_Pos.latitude;
-  //     json_doc["longitude"] = Current_Pos.longitude;
-  //     json_doc["altitude"] = Current_Pos.altitude;
-  //   }else{
-  //     json_doc["fix"] = 0;
-  //   }
+    if(Current_Pos.fix != 0){
+      json_doc["fix"] = 1;
+      json_doc["latitude"] = Current_Pos.latitude;
+      json_doc["longitude"] = Current_Pos.longitude;
+      json_doc["altitude"] = Current_Pos.altitude;
+    }else{
+      json_doc["fix"] = 0;
+    }
 
-  //   size_t lenght = serializeJson(json_doc, serial_json);
-  //   ws.textAll(serial_json, lenght);
+    size_t lenght = serializeJson(json_doc, serial_json);
+    ws.textAll(serial_json, lenght);
 
-  //   Last_Data_Sent = millis();
-  // }
+    Last_Data_Sent = millis();
+  }
 }
 
 
