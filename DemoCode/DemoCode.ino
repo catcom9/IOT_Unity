@@ -104,7 +104,7 @@ void loop() {
 
   
   static uint32_t Last_Data_Sent = 0;
-  if (millis() - Last_Data_Sent >= 1000){
+  if (millis() - Last_Data_Sent >= 10000){
     StaticJsonDocument<200> json_doc;
     char serial_json[200];
 
