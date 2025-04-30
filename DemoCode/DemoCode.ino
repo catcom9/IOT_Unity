@@ -31,6 +31,7 @@ volatile uint8_t HR_DATA_READY = 0;
 
 float wheelDia = 0.1; //Wheel diamater in meters
 float circufrance = wheelDia * 3.14159;
+float BikeSpeed = 0;
 
 
 void setup() {
@@ -87,10 +88,11 @@ void loop() {
     PEDAL_RPM_COUNT = 0;
 
     Last_Calculation = Current_Time;
+    BikeSpeed = (((float)Wheel_RPM * circufrance) * 3.6);
     
     char buffer[50];
     LCD_Clear();
-    sprintf(buffer, "Speed: %.1fKm/H\nCadance %lu RPM", (((float)Wheel_RPM * circufrance) * 3.6), Pedal_RPM);
+    sprintf(buffer, "Speed: %.1fKm/H\nCadance %lu RPM", BikeSpeed, Pedal_RPM);
     LCD_WriteString(buffer);
 
   }
@@ -113,6 +115,8 @@ void loop() {
       json_doc["latitude"] = Current_Pos.latitude;
       json_doc["longitude"] = Current_Pos.longitude;
       json_doc["altitude"] = Current_Pos.altitude;
+      json_doc["speed"] = BikeSpeed;
+      
     }else{
       json_doc["fix"] = 0;
     }
